@@ -16,6 +16,12 @@ class IndecisionApp extends React.Component {
         });
     }
     addNew(option){
+        if(!option){
+            return "There is nothing to add" ;//funkcja zwróci coś tylko w wypadku, gdy będzie błąd
+        }
+        else if(this.state.options.indexOf(option)>-1){//jeżeli już istnieje pod jakimś indeksem (inaczej zwróci -1)
+            return "This option has been already added;"
+        }
         this.setState((prevState) => {//nie ma =
             return {
                 options: prevState.options.concat([option])//dodawany element musi być w klamrach - łączenie tablic
@@ -90,18 +96,22 @@ class AddOptions extends React.Component{
     constructor(props){//konstruktor zawsze w reactcie działa z props
         super(props); //żeby mieć dostęp do this.props
         this.formSubmit = this.formSubmit.bind(this);//żeby formSubmit miała dobry kontekst 
+        this.state = {
+            error: undefined //bedzie puste, jezeli blad sie nie pojawi
+        }
     }//odnośnie this - bez tego wskazuje na undefined
     formSubmit (e) {
         e.preventDefault();
         const option = e.target.elements.option.value.trim() //trim pozwala na usuwanie także spacji;
-        if(option) {
-            this.props.addNew(option);
-            e.target.elements.option.value = '';
-        }
+        this.setState(() => {
+            return {error: this.props.addNew(option)};
+            }); 
+        e.target.elements.option.value = '';
     }
     render(){
         return (
             <div>
+                {this.state.error && <p>{this.state.error}</p>}
                 <form onSubmit = {this.formSubmit}>
                     <input type = 'text' name = 'option'/>
                     <button>Add option</button>

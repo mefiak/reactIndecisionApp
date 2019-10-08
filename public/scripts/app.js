@@ -37,6 +37,12 @@ var IndecisionApp = function (_React$Component) {
     }, {
         key: "addNew",
         value: function addNew(option) {
+            if (!option) {
+                return "There is nothing to add"; //funkcja zwróci coś tylko w wypadku, gdy będzie błąd
+            } else if (this.state.options.indexOf(option) > -1) {
+                //jeżeli już istnieje pod jakimś indeksem (inaczej zwróci -1)
+                return "This option has been already added;";
+            }
             this.setState(function (prevState) {
                 //nie ma =
                 return {
@@ -205,6 +211,9 @@ var AddOptions = function (_React$Component6) {
 
 
         _this6.formSubmit = _this6.formSubmit.bind(_this6); //żeby formSubmit miała dobry kontekst 
+        _this6.state = {
+            error: undefined //bedzie puste, jezeli blad sie nie pojawi
+        };
         return _this6;
     } //odnośnie this - bez tego wskazuje na undefined
 
@@ -212,12 +221,14 @@ var AddOptions = function (_React$Component6) {
     _createClass(AddOptions, [{
         key: "formSubmit",
         value: function formSubmit(e) {
+            var _this7 = this;
+
             e.preventDefault();
             var option = e.target.elements.option.value.trim(); //trim pozwala na usuwanie także spacji;
-            if (option) {
-                this.props.addNew(option);
-                e.target.elements.option.value = '';
-            }
+            this.setState(function () {
+                return { error: _this7.props.addNew(option) };
+            });
+            e.target.elements.option.value = '';
         }
     }, {
         key: "render",
@@ -225,6 +236,11 @@ var AddOptions = function (_React$Component6) {
             return React.createElement(
                 "div",
                 null,
+                this.state.error && React.createElement(
+                    "p",
+                    null,
+                    this.state.error
+                ),
                 React.createElement(
                     "form",
                     { onSubmit: this.formSubmit },
