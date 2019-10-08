@@ -1,0 +1,11 @@
+{
+  "name": "1_apka",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Mateusz Zanko",
+  "license": "MIT",
+  "dependencies": {
+    "babel-preset-env": "1.5.2",
+    "babel-preset-react": "6.24.1"
+  }
+}
