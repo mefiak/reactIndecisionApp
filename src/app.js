@@ -5,7 +5,7 @@ class IndecisionApp extends React.Component {
         this.randomChoice = this.randomChoice.bind(this);
         this.addNew = this.addNew.bind(this);
         this.state = {
-            options: [1,2,3,4,5]
+            options: []
         }
     }
     deleteAll(){
@@ -46,52 +46,44 @@ class IndecisionApp extends React.Component {
         );
     }
 };
-class Header extends React.Component{
-    render() {
-        return (
+const Header  = (props) => {
+        return ( //dziala jak render przy bezstanowych, komponentowych funkcjach, this tu nie dziala
             <div>
-                <h1>{this.props.title}</h1>
-                <h2>{this.props.subtitle}</h2>
+                <h1>{props.title}</h1>
+                <h2>{props.subtitle}</h2>
             </div>
         );
-    }
-}
-class Action extends React.Component{
-    render() {
-        return (
-            <div>
-                <button 
-                    onClick={this.props.randomChoice} 
-                    disabled = {!this.props.ifAble}
-                    >
-                    {this.props.actionButtonTxt}
-                </button>
-            </div>
+};
+const Action = (props) =>{
+    return (
+        <div>
+            <button 
+                onClick={props.randomChoice} 
+                disabled = {!props.ifAble}
+                >
+                {props.actionButtonTxt}
+            </button>
+        </div>
         );
-    }
-}
-class Options extends React.Component {
-    render(){
-        return (
-            <div> 
-                {
-                    this.props.options.map((option) => <Option key = {option} optionText={option}/>)
-                }
-                <p>There are {this.props.options.length} options</p>
-                <button onClick = {this.props.deleteAll}> Remove all </button>
-            </div>
-        );
-    }
-}
-class Option extends React.Component{
-    render(){
-        return(
-            <div>
-            {this.props.optionText}
-            </div>
-        )
-    }
-}
+};
+const Options = (props) => {
+    return (
+        <div> 
+            {
+                props.options.map((option) => <Option key = {option} optionText={option}/>)
+            }
+            <p>There are {props.options.length} options</p>
+            <button onClick = {props.deleteAll}> Remove all </button>
+        </div>
+    );
+};
+const Option =(props) => {
+    return( 
+        <div> 
+        {props.optionText} 
+        </div>
+    );
+};
 class AddOptions extends React.Component{
     constructor(props){//konstruktor zawsze w reactcie działa z props
         super(props); //żeby mieć dostęp do this.props
