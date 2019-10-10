@@ -17,21 +17,33 @@ var IndecisionApp = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (IndecisionApp.__proto__ || Object.getPrototypeOf(IndecisionApp)).call(this, props));
 
         _this.deleteAll = _this.deleteAll.bind(_this);
+        _this.deleteOption = _this.deleteOption.bind(_this);
         _this.randomChoice = _this.randomChoice.bind(_this);
         _this.addNew = _this.addNew.bind(_this);
         _this.state = {
-            options: []
+            options: props.options
         };
         return _this;
     }
 
     _createClass(IndecisionApp, [{
+        key: "deleteOption",
+        value: function deleteOption(option2remove) {
+            this.setState(function (prevState) {
+                return {
+                    options: prevState.options.filter( // funkcja działa jak mapowanie, ale kiedy zwraca prawdę dla wartości
+                    function (option) {
+                        //to wrzuca ją do nowej tablicy, a jak zwraca fałsz, to wyrzuca tą wartość
+                        return option !== option2remove;
+                    })
+                };
+            });
+        }
+    }, {
         key: "deleteAll",
         value: function deleteAll() {
             this.setState(function () {
-                return {
-                    options: []
-                };
+                return { options: [] };
             });
         }
     }, {
@@ -44,11 +56,9 @@ var IndecisionApp = function (_React$Component) {
                 return "This option has been already added;";
             }
             this.setState(function (prevState) {
-                //nie ma =
-                return {
-                    options: prevState.options.concat([option]) //dodawany element musi być w klamrach - łączenie tablic
-                }; //concat tworzy nowa tablice zlozona z 2 podanych
+                return { options: prevState.options.concat([option]) };
             });
+            //dodawany element musi być w klamrach - łączenie tablic//concat tworzy nowa tablice zlozona z 2 podanych
         }
     }, {
         key: "randomChoice",
@@ -58,17 +68,24 @@ var IndecisionApp = function (_React$Component) {
     }, {
         key: "render",
         value: function render() {
-            var title = "Indecision App";
             var subtitle = "Put your decision in the hands of computer";
             var actionButtonTxt = "What should I do?";
             return React.createElement(
                 "div",
                 null,
-                React.createElement(Header, { title: title, subtitle: subtitle }),
-                React.createElement(AddOptions, { options: this.state.options, addNew: this.addNew }),
-                React.createElement(Action, { ifAble: this.state.options.length > 0, randomChoice: this.randomChoice,
-                    actionButtonTxt: actionButtonTxt }),
-                React.createElement(Options, { options: this.state.options, deleteAll: this.deleteAll })
+                React.createElement(Header, { subtitle: subtitle
+                }),
+                React.createElement(AddOptions, { options: this.state.options,
+                    addNew: this.addNew
+                }),
+                React.createElement(Action, { ifAble: this.state.options.length > 0,
+                    randomChoice: this.randomChoice,
+                    actionButtonTxt: actionButtonTxt
+                }),
+                React.createElement(Options, { deleteOption: this.deleteOption,
+                    options: this.state.options,
+                    deleteAll: this.deleteAll
+                })
             );
         }
     }]);
@@ -77,6 +94,9 @@ var IndecisionApp = function (_React$Component) {
 }(React.Component);
 
 ;
+IndecisionApp.defaultProps = {
+    options: []
+};
 var Header = function Header(props) {
     return (//dziala jak render przy bezstanowych, komponentowych funkcjach, this tu nie dziala
         React.createElement(
@@ -94,6 +114,9 @@ var Header = function Header(props) {
             )
         )
     );
+};
+Header.defaultProps = {
+    title: "Indecision App"
 };
 var Action = function Action(props) {
     return React.createElement(
@@ -114,7 +137,8 @@ var Options = function Options(props) {
         "div",
         null,
         props.options.map(function (option) {
-            return React.createElement(Option, { key: option, optionText: option });
+            return React.createElement(Option, { key: option, optionText: option,
+                deleteOption: props.deleteOption });
         }),
         React.createElement(
             "p",
@@ -134,8 +158,17 @@ var Option = function Option(props) {
     return React.createElement(
         "div",
         null,
-        props.optionText
-    );
+        props.optionText,
+        React.createElement(
+            "button",
+            { onClick: function onClick(e) {
+                    props.deleteOption(props.optionText);
+                } },
+            "remove"
+        )
+    ) /*wyświetla możliwe wartości
+      e - żeby zadziałało odnośnie tego co w niego kliknięto*/
+    ;
 };
 
 var AddOptions = function (_React$Component2) {

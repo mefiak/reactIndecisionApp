@@ -2,18 +2,23 @@ class IndecisionApp extends React.Component {
     constructor(props){
         super(props);
         this.deleteAll = this.deleteAll.bind(this);
+        this.deleteOption = this.deleteOption.bind(this);
         this.randomChoice = this.randomChoice.bind(this);
         this.addNew = this.addNew.bind(this);
         this.state = {
-            options: []
-        }
+            options: props.options
+        };
+    }
+    deleteOption(option2remove)  {
+        this.setState((prevState) => ({
+            options: prevState.options.filter(// funkcja działa jak mapowanie, ale kiedy zwraca prawdę dla wartości
+            (option) =>{                        //to wrzuca ją do nowej tablicy, a jak zwraca fałsz, to wyrzuca tą wartość
+                    return option !== option2remove
+                })
+        }))
     }
     deleteAll(){
-        this.setState(() => {
-            return {
-                options: []
-            };
-        });
+        this.setState(() => ({options: []}));
     }
     addNew(option){
         if(!option){
@@ -22,29 +27,36 @@ class IndecisionApp extends React.Component {
         else if(this.state.options.indexOf(option)>-1){//jeżeli już istnieje pod jakimś indeksem (inaczej zwróci -1)
             return "This option has been already added;"
         }
-        this.setState((prevState) => {//nie ma =
-            return {
-                options: prevState.options.concat([option])//dodawany element musi być w klamrach - łączenie tablic
-            };//concat tworzy nowa tablice zlozona z 2 podanych
-        });
+        this.setState((prevState) => ({options: prevState.options.concat([option])}));
+            //dodawany element musi być w klamrach - łączenie tablic//concat tworzy nowa tablice zlozona z 2 podanych
     }
     randomChoice(){
             alert(this.state.options[Math.floor(Math.random()*this.state.options.length)]);
     }
     render() {
-        const title = "Indecision App";
         const subtitle = "Put your decision in the hands of computer";
         const actionButtonTxt = "What should I do?";
         return (
             <div>
-                <Header title = {title} subtitle = {subtitle} />
-                <AddOptions options = {this.state.options} addNew = {this.addNew}/>
-                <Action ifAble = {this.state.options.length > 0} randomChoice = {this.randomChoice}
-                actionButtonTxt = {actionButtonTxt}/>
-                <Options options = {this.state.options} deleteAll = {this.deleteAll} />
+                <Header subtitle = {subtitle} 
+                />
+                <AddOptions options = {this.state.options} 
+                addNew = {this.addNew}
+                />
+                <Action ifAble = {this.state.options.length > 0} 
+                randomChoice = {this.randomChoice}
+                actionButtonTxt = {actionButtonTxt}
+                />
+                <Options deleteOption = {this.deleteOption} 
+                    options = {this.state.options} 
+                    deleteAll = {this.deleteAll} 
+                />
             </div>
         );
     }
+};
+IndecisionApp.defaultProps = {
+    options: []
 };
 const Header  = (props) => {
         return ( //dziala jak render przy bezstanowych, komponentowych funkcjach, this tu nie dziala
@@ -54,6 +66,9 @@ const Header  = (props) => {
             </div>
         );
 };
+Header.defaultProps = {
+    title: "Indecision App",
+}
 const Action = (props) =>{
     return (
         <div>
@@ -70,7 +85,8 @@ const Options = (props) => {
     return (
         <div> 
             {
-                props.options.map((option) => <Option key = {option} optionText={option}/>)
+                props.options.map((option) => <Option key = {option} optionText={option} 
+                deleteOption ={props.deleteOption}/>)
             }
             <p>There are {props.options.length} options</p>
             <button onClick = {props.deleteAll}> Remove all </button>
@@ -80,8 +96,10 @@ const Options = (props) => {
 const Option =(props) => {
     return( 
         <div> 
-        {props.optionText} 
-        </div>
+            {props.optionText} 
+            <button onClick = {(e) => {props.deleteOption(props.optionText)}}>remove</button> 
+        </div>/*wyświetla możliwe wartości
+        e - żeby zadziałało odnośnie tego co w niego kliknięto*/
     );
 };
 class AddOptions extends React.Component{
@@ -95,9 +113,7 @@ class AddOptions extends React.Component{
     formSubmit (e) {
         e.preventDefault();
         const option = e.target.elements.option.value.trim() //trim pozwala na usuwanie także spacji;
-        this.setState(() => {
-            return {error: this.props.addNew(option)};
-            }); 
+        this.setState(() => ({error: this.props.addNew(option)}));
         e.target.elements.option.value = '';
     }
     render(){
