@@ -9,6 +9,26 @@ class IndecisionApp extends React.Component {
             options: props.options
         };
     }
+    componentDidMount(){
+        try {
+            const json = localStorage.getItem('options') //pobieramy istniejace opcje kiedy odswieza sie strone
+            const options = JSON.parse(json) //zawartosc localStorage zmieniona spowrotem na obiekt
+            if(options)
+                this.setState(() => ({options})) //próba wepchania zawartości do state'a
+        }
+        catch (e){
+            //nic nie robimy, bo chodzi tylko o powtorzenie try na wypadek zlych wartosci
+        }
+    }
+    componentDidUpdate(prevProps, prevState){
+        if(prevState.options.length !== this.state.options.length){
+            const json = JSON.stringify(this.state.options)//przeklada obiekty na tekst, w innym wypadku obiekty zostaną jednolitym tekstem
+            localStorage.setItem('options', json) //przekłada tekst do zmiennej lokalnej, usuwając wartości, to też je traci
+         }
+    }
+    componentwillUnmount(){
+        console.log('ComponentWillUnmount')
+    }
     deleteOption(option2remove)  {
         this.setState((prevState) => ({
             options: prevState.options.filter(// funkcja działa jak mapowanie, ale kiedy zwraca prawdę dla wartości
